@@ -7,6 +7,8 @@ First, run the development server:
 ```bash
 npm run dev
 ```
+
 ## Note
+
 Unauthorized use is strictly prohibited.
 The author takes no responsibility for any consequences.

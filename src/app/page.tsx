@@ -1,14 +1,19 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Sparkles, Gift } from "lucide-react";
+import { Sparkles, Gift, ExternalLink } from "lucide-react";
+import Image from "next/image";
 
-const items = [
-  "A",
-  "B",
-  "C",
-  "D",
+type Item = {
+  item: string;
+  url: string;
+};
+const items: Item[] = [
+  { item: "お祝い金(N万円)", url: "/images/celebration_money.jpg" },
+  { item: "アニメ抱き枕", url: "/images/body_pillow.jpg" },
+  { item: "ディナーペアチケット", url: "/images/disney.jpg" },
+  { item: "いい感じのクッション", url: "/images/cushion.jpg" },
 ];
-const rinerWeight = "B";
+const rinerWeight = "いい感じのクッション";
 const rounds = 100;
 const weightHeight = 80;
 const spinDuration = 10;
@@ -16,8 +21,8 @@ const spinDuration = 10;
 export default function Home() {
   const [hasSpun, setHasSpun] = useState(false);
   const [isSpining, setIsSpining] = useState(false);
-  const [weightsArray, setWeightsArray] = useState<string[]>([]);
-  const [winningItem, setWinningItem] = useState<string | null>(null);
+  const [weightsArray, setWeightsArray] = useState<Item[]>([]);
+  const [winningItem, setWinningItem] = useState<Item | null>(null);
   const [animationStyle, setAnimationStyle] = useState({});
   const rouletteRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +49,9 @@ export default function Home() {
     } else {
       setIsSpining(true);
 
-      const selectedIndex = items.indexOf(rinerWeight);
+      const selectedIndex = items.findIndex(
+        (item) => item.item === rinerWeight,
+      );
       const totalWeights = items.length;
       const container = document.querySelector(
         ".roulette-container",
@@ -78,7 +85,7 @@ export default function Home() {
           selectedDiv.style.transform = "scale(1)";
           selectedDiv.style.transition = "none";
 
-          setWinningItem(items[selectedIndex]); 
+          setWinningItem(items[selectedIndex]);
           setAnimationStyle({
             transform: "scale(2) rotate(360deg)",
             transition: "transform 1s ease-in-out, opacity 1s ease-in-out",
@@ -122,27 +129,50 @@ export default function Home() {
           </defs>
           <text fontSize="30" fontWeight="bold" fill="white" fontFamily="serif">
             <textPath href="#arcPath" startOffset="50%" textAnchor="middle">
-              Sample Message
+              Happy Wedding, Yui!
             </textPath>
           </text>
         </svg>
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-32 h-[1px] bg-gradient-to-r from-transparent via-[#44BEFF] to-transparent"></div>
       </div>
 
-      {/* Prize list */}
-      <div className="prizes-container w-full max-w-[400px] text-center mb-10">
+      {/* Prize gallery */}
+      <div className="prizes-container w-full max-w-[800px] text-center mb-10">
         <h2 className="text-xl font-serif font-bold mb-4 flex items-center justify-center gap-2">
           <Gift className="w-5 h-5 text-[#44BEFF]" />
           <span>景品一覧</span>
           <Gift className="w-5 h-5 text-[#44BEFF]" />
         </h2>
-        <div className="grid grid-cols-2 gap-3 text-sm">
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center">
           {items.map((item, index) => (
             <div
               key={index}
-              className="px-4 py-3 rounded-lg bg-[#ffffff0f] backdrop-blur-sm text-white shadow-lg border border-[#ffffff15] hover:bg-[#ffffff18] transition-all duration-300"
+              className="rounded-lg bg-[#ffffff0f] backdrop-blur-sm text-white shadow-lg border border-[#ffffff15] hover:bg-[#ffffff18] transition-all duration-300 overflow-hidden flex flex-col"
             >
-              {item}
+              <div className="relative w-full h-40 overflow-hidden">
+                <Image
+                  src={item.url || "/placeholder.svg"}
+                  alt={item.item}
+                  fill
+                  className="object-cover transition-transform duration-300 hover:scale-110"
+                />
+              </div>
+
+              <div className="p-3 flex items-center justify-center">
+                <span>{item.item}</span>
+                {item.url.startsWith("http") && (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-2 text-[#44BEFF] hover:text-[#2fc1e9]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -168,7 +198,7 @@ export default function Home() {
               }`}
               style={weight === winningItem ? animationStyle : {}}
             >
-              {weight}
+              {weight.item}
             </div>
           ))}
         </div>
@@ -182,11 +212,11 @@ export default function Home() {
           className="px-8 py-3 bg-gradient-to-r from-[#2fc1e9] to-[#2f86e9] text-white font-bold rounded-full hover:from-[#2fb1e9] hover:to-[#2f76e9] transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           <Sparkles className="w-5 h-5" />
-          {isSpining ? "回転中..." : hasSpun ?  "リセット": "スタート"}
+          {isSpining ? "回転中..." : hasSpun ? "リセット" : "スタート"}
         </button>
       </div>
 
-      {/* Add keyframes for pulse animation */}
+      {/* Add keyframes for animations */}
       <style jsx>{`
         @keyframes pulse {
           0% {
@@ -195,6 +225,18 @@ export default function Home() {
           100% {
             transform: scale(1.05);
           }
+        }
+        @keyframes flow {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+
+        .animate-flow {
+          animation: flow 20s linear infinite;
         }
       `}</style>
     </div>
