@@ -13,6 +13,8 @@ const items: Item[] = [
   { item: "ディナーペアチケット", url: "/images/disney.jpg" },
   { item: "いい感じのクッション", url: "/images/cushion.jpg" },
 ];
+
+const titleMessage="Happy Wedding, Yui!"
 const rinerWeight = "いい感じのクッション";
 const rounds = 100;
 const weightHeight = 80;
@@ -129,7 +131,7 @@ export default function Home() {
           </defs>
           <text fontSize="30" fontWeight="bold" fill="white" fontFamily="serif">
             <textPath href="#arcPath" startOffset="50%" textAnchor="middle">
-              Happy Wedding, Yui!
+              {titleMessage}
             </textPath>
           </text>
         </svg>
